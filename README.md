@@ -16,6 +16,7 @@
                             moduleName: 'Model' // This is the model and file name
                         }
                     ],
+                    model : 'lib/model', // location where models will be created not supported for angularJS
                     dest: 'lib'
                 },
                 dist: {

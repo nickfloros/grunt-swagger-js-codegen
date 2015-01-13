@@ -12,8 +12,14 @@ module.exports = function (grunt) {
         var dest = options.dest;
         var promises = [];
         var done = this.async();
+        var modelDestination = options.modelDestination===undefined?null:options.modelDestination;
 
         grunt.file.mkdir(dest);
+
+        if (modelDestination!==null) {
+            grunt.file.mkdir(modelDestination);
+        }
+
         options.apis.forEach(function(api){
             var deferred = Q.defer();
             if(api.swagger.substring(0, 'http://'.length) === 'http://' || api.swagger.substring(0, 'https://'.length) === 'https://') {
@@ -36,6 +42,20 @@ module.exports = function (grunt) {
                         }
                         grunt.log.writeln('Generated ' + api.fileName + ' from ' + api.swagger);
                         fs.writeFileSync(dest + '/' + api.fileName, source, 'UTF-8');
+
+
+                        if (modelDestination!==null) {
+                            var srcCode = CodeGen.getNodeModelCode({
+                                    type : 'node',
+                                    swagger : swagger
+                                    }
+                                );
+                            var modelKeys = _.kes(srcCode);
+                            modelKeys.forEach(function(model){
+                                fs.writeFileSync(modelDestination + '/' + model+'.js', srcCode[model], 'UTF-8');
+                            });
+                        }
+
                         deferred.resolve();
                     }
                 });
@@ -56,6 +76,17 @@ module.exports = function (grunt) {
                         }
                         grunt.log.writeln('Generated ' + api.fileName + ' from ' + api.swagger);
                         fs.writeFileSync(dest + '/' + api.fileName, source, 'UTF-8');
+                        if (modelDestination!==null) {
+                            var srcCode = CodeGen.getNodeModelCode({
+                                    type : 'node',
+                                    swagger : swagger
+                                    }
+                                );
+                            var modelKeys = _.kes(srcCode);
+                            modelKeys.forEach(function(model){
+                                fs.writeFileSync(modelDestination + '/' + model+'.js', srcCode[model], 'UTF-8');
+                            });
+                        }                        
                         deferred.resolve();
                     }
                 });
