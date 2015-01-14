@@ -50,8 +50,9 @@ module.exports = function (grunt) {
                                     swagger : swagger
                                     }
                                 );
-                            var modelKeys = _.kes(srcCode);
+                            var modelKeys = _.keys(srcCode);
                             modelKeys.forEach(function(model){
+                                grunt.log.writeln('Generated ' + model + ' from ' + api.swagger);                                
                                 fs.writeFileSync(modelDestination + '/' + model+'.js', srcCode[model], 'UTF-8');
                             });
                         }
