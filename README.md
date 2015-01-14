@@ -13,7 +13,7 @@
                     apis: [
                         {
                             swagger: 'swagger/_queries',
-                            moduleName: 'Model' // This is the model and file name
+                            moduleName: 'Model' // This is the class name and the file name
                         }
                     ],
                     model : 'lib/model', // location where models will be created not supported for angularJS
@@ -36,7 +36,8 @@
                     apis: [
                         {
                             swagger: 'swagger/_queries',
-                            moduleName: 'Model', // This is the model and file name
+                            moduleName: 'Model', // This is the class name and the file name
+                            className : 'NgModel', // this is the ng factory name the module will be created in
                             angularjs: true
                         }
                     ],
