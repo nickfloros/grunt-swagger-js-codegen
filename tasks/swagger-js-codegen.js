@@ -12,7 +12,7 @@ module.exports = function (grunt) {
         var dest = options.dest;
         var promises = [];
         var done = this.async();
-        var modelDestination = options.modelDestination===undefined?null:options.modelDestination;
+        var modelDestination = options.model===undefined?null:options.model;
 
         grunt.file.mkdir(dest);
 
@@ -36,12 +36,12 @@ module.exports = function (grunt) {
                         if (api.type === 'angular' || api.angularjs === true) {
                             source = CodeGen.getAngularCode({ moduleName: api.moduleName, className: api.className, swagger: swagger });
                         } else if (api.custom === true) {
-                            source = CodeGen.getCustomCode({ className: api.className, template: api.template, swagger: swagger });
+                            source = CodeGen.getCustomCode({ className: api.moduleName, template: api.template, swagger: swagger });
                         } else {
-                            source = CodeGen.getNodeCode({ className: api.className, swagger: swagger });
+                            source = CodeGen.getNodeCode({ className: api.moduleName, swagger: swagger });
                         }
-                        grunt.log.writeln('Generated ' + api.fileName + ' from ' + api.swagger);
-                        fs.writeFileSync(dest + '/' + api.fileName, source, 'UTF-8');
+                        grunt.log.writeln('Generated ' + api.moduleName + ' from ' + api.swagger);
+                        fs.writeFileSync(dest + '/' + api.moduleName+'.js', source, 'UTF-8');
 
 
                         if (modelDestination!==null) {
