@@ -12,8 +12,14 @@ module.exports = function (grunt) {
         var dest = options.dest;
         var promises = [];
         var done = this.async();
+        var modelDestination = options.model===undefined?null:options.model;
 
         grunt.file.mkdir(dest);
+
+        if (modelDestination!==null) {
+            grunt.file.mkdir(modelDestination);
+        }
+
         options.apis.forEach(function(api){
             var deferred = Q.defer();
             if(api.swagger.substring(0, 'http://'.length) === 'http://' || api.swagger.substring(0, 'https://'.length) === 'https://') {
@@ -30,12 +36,27 @@ module.exports = function (grunt) {
                         if (api.type === 'angular' || api.angularjs === true) {
                             source = CodeGen.getAngularCode({ moduleName: api.moduleName, className: api.className, swagger: swagger });
                         } else if (api.custom === true) {
-                            source = CodeGen.getCustomCode({ className: api.className, template: api.template, swagger: swagger });
+                            source = CodeGen.getCustomCode({ className: api.moduleName, template: api.template, swagger: swagger });
                         } else {
-                            source = CodeGen.getNodeCode({ className: api.className, swagger: swagger });
+                            source = CodeGen.getNodeCode({ className: api.moduleName, swagger: swagger });
                         }
-                        grunt.log.writeln('Generated ' + api.fileName + ' from ' + api.swagger);
-                        fs.writeFileSync(dest + '/' + api.fileName, source, 'UTF-8');
+                        grunt.log.writeln('Generated ' + api.moduleName + ' from ' + api.swagger);
+                        fs.writeFileSync(dest + '/' + api.moduleName+'.js', source, 'UTF-8');
+
+
+                        if (modelDestination!==null) {
+                            var srcCode = CodeGen.getNodeModelCode({
+                                    type : 'node',
+                                    swagger : swagger
+                                    }
+                                );
+                            var modelKeys = _.keys(srcCode);
+                            modelKeys.forEach(function(model){
+                                grunt.log.writeln('Generated ' + model + ' from ' + api.swagger);                                
+                                fs.writeFileSync(modelDestination + '/' + model+'.js', srcCode[model], 'UTF-8');
+                            });
+                        }
+
                         deferred.resolve();
                     }
                 });
@@ -56,6 +77,17 @@ module.exports = function (grunt) {
                         }
                         grunt.log.writeln('Generated ' + api.fileName + ' from ' + api.swagger);
                         fs.writeFileSync(dest + '/' + api.fileName, source, 'UTF-8');
+                        if (modelDestination!==null) {
+                            var srcCode = CodeGen.getNodeModelCode({
+                                    type : 'node',
+                                    swagger : swagger
+                                    }
+                                );
+                            var modelKeys = _.kes(srcCode);
+                            modelKeys.forEach(function(model){
+                                fs.writeFileSync(modelDestination + '/' + model+'.js', srcCode[model], 'UTF-8');
+                            });
+                        }                        
                         deferred.resolve();
                     }
                 });
