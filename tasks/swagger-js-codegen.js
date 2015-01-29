@@ -12,6 +12,7 @@ module.exports = function(grunt) {
    */
   function createApiFile(swagger, api, dest) {
     var source;
+    grunt.log.writeln('Generating api for '+api.moduleName+' from ' + api.swagger);    
     if (api.type === 'angular' || api.angularjs === true) {
       source = CodeGen.getAngularCode({
         moduleName: api.moduleName,
@@ -30,8 +31,7 @@ module.exports = function(grunt) {
         swagger: swagger
       });
     }
-    grunt.log.writeln('Generated ' + api.moduleName + ' from ' + api.swagger);
-    fs.writeFileSync(dest + '/' + api.moduleName + '.js', source, 'UTF-8');
+    fs.writeFileSync(dest + '/' + api.moduleName.toLowerCase() + '.js', source, 'UTF-8');
   }
 
 
@@ -47,6 +47,7 @@ module.exports = function(grunt) {
       var params = {
         swagger: swagger
       };
+      grunt.log.writeln('Generating models for '+api.moduleName);
       if (api.nameSpace !== undefined || options.nameSpace !== undefined) {
         params.nameSpace = api.nameSpace || options.nameSpace;
       }
@@ -60,7 +61,7 @@ module.exports = function(grunt) {
       fs.writeFileSync(modelDestination + '/index.js', nameSpaceModels.nameSpaceCode, 'UTF-8');
 
       for (var model in models) {
-        grunt.log.writeln(models[model].fileName);
+
         fs.writeFileSync(modelDestination + '/' + models[model].fileName + '.js', models[model].code, 'UTF-8');
       }
     }
